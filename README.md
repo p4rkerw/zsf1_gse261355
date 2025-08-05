@@ -81,14 +81,16 @@ done < "$input_file"
 
 for acc in "${accession_array[@]}"; do
   echo "Quantifying $acc..."
-  salmon quant \
-    -i reference/salmon_index_GRCr8 \
-    -l A \
-    -1 project/$acc/"${acc}.sra_1.fastq" \
-    -2 project/$acc/"${acc}.sra_2.fastq" \
-    -p 8 \
-    --validateMappings \
-    -o project/$acc/salmon_quant
+  salmon quant -i reference/salmon_index_GRCr8 \
+             -l A \
+             -r project/$acc/"${acc}.sra.fastq" \
+             --seqBias \
+             --gcBias \
+             --validateMappings \
+             -o project/$acc/salmon_quant \
+             --fldMean 200 \
+             --fldSD 20 \
+             -p 8
 done
 
 
