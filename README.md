@@ -88,7 +88,7 @@ for acc in "${accession_array[@]}"; do
     -2 project/$acc/"${acc}.sra_2.fastq" \
     -p 8 \
     --validateMappings \
-    -o project/$acc/salmon_quant/$acc
+    -o project/$acc/salmon_quant
 done
 
 
