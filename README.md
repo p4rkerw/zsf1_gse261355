@@ -1,5 +1,5 @@
 # zsf1_gse261355
-zsf1 rat kidney gse261355 pmid40409667
+zsf1 rat kidney gse263155 pmid40409667
 
 # mouse_adenine_rna
 analysis of publicly available bulk rna seq data for
