@@ -85,7 +85,6 @@ for acc in "${accession_array[@]}"; do
              -l A \
              -r project/$acc/"${acc}.sra.fastq" \
              --seqBias \
-             --gcBias \
              --validateMappings \
              -o project/$acc/salmon_quant \
              --fldMean 200 \
