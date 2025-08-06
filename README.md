@@ -4,7 +4,7 @@ zsf1 rat kidney gse261355 pmid40409667
 # mouse_adenine_rna
 analysis of publicly available bulk rna seq data for
 
-1. mouse adenine-induced CKD from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE261355
+1. mouse adenine-induced CKD from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE263155
 
 
 
@@ -16,7 +16,7 @@ vdb-config --interactive
 
 #!/bin/bash
 
-dir=/mnt/h/scratch/gse261355
+dir=/mnt/h/scratch/gse263155
 mkdir -P $dir && cd $dir
 
 # Path to your input file
@@ -51,7 +51,7 @@ count with salmon
 SCRATCH1=/mnt/h/scratch
 docker run -it --rm \
 --workdir $HOME \
--v /mnt/h/scratch/gse261355:$HOME/project \
+-v /mnt/h/scratch/gse263155:$HOME/project \
 -v /mnt/g/reference:$HOME/reference \
 -v $HOME:$HOME \
 -v $SCRATCH1:$SCRATCH1 \
