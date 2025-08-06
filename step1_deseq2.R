@@ -42,13 +42,22 @@ files <- list.files('project', pattern = "quant.sf", recursive=TRUE, full.names 
 
 # Load metadata
 samples <- str_split(files, pattern = "/", simplify=TRUE)[,2]
-is_adenine <- c(1,1,1,1,0,0,0,0)
-samples <- data.frame(sample = samples, is_adenine = as.factor(is_adenine), path = files)
+samples.df <- data.frame(samples = samples, path = files)
+
+metadata <- read.csv('project/SraRunTable.csv') %>%
+  dplyr::filter(Run %in% samples) %>%
+  dplyr::arrange(samples) %>%
+  dplyr::filter(treatment %in% c("Vehicle","Empagliflozin"))
+
+samples.df <- samples.df[samples %in% metadata$Run,]
+files <- files[samples %in% metadata$Run]
+
+coldata <- data.frame(sample = samples.df$samples, genotype = as.factor(metadata$genotype), treatment = as.factor(metadata$treatment))
 
 # Connect to Ensembl BioMart for mouse (Mus musculus)
-# ensembl <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
+# ensembl <- useEnsembl(biomart = "ensembl", dataset = "rnorvegicus_gene_ensembl")
 
-ensembl <- useEnsembl(biomart = "ensembl", dataset = "mmusculus_gene_ensembl", mirror = "useast")
+ensembl <- useEnsembl(biomart = "ensembl", dataset = "rnorvegicus_gene_ensembl", mirror = "useast")
 
 # Retrieve transcript IDs and corresponding gene IDs
 tx2gene <- getBM(attributes = c("ensembl_transcript_id", "mgi_symbol"),
@@ -68,8 +77,8 @@ txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreTxV = TRUE)
 
 # Create DESeq2 dataset
 dds <- DESeqDataSetFromTximport(txi,
-                                colData = samples,
-                                design = ~ is_adenine)
+                                colData = coldata,
+                                design = ~ genotype + treatment)
 
 # Filter low counts
 dds <- dds[rowSums(counts(dds)) > 10, ]
@@ -78,16 +87,32 @@ dds <- dds[rowSums(counts(dds)) > 10, ]
 dds <- DESeq(dds)
 
 # Get results
-res <- results(dds, contrast = c("is_adenine", 1, 0))
+res <- results(dds, contrast = c("genotype", "ZSF1 Obese", "ZSF1 Lean"))
 
 # Shrink log fold changes for plotting
-resLFC <- lfcShrink(dds, coef="is_adenine_1_vs_0", type="apeglm")
+resLFC <- lfcShrink(dds, coef="genotype_ZSF1.Obese_vs_ZSF1.Lean", type="apeglm")
 
 # Order by adjusted p-value
 resOrdered <- resLFC[order(resLFC$padj), ]
 
 # Save results
 write.csv(as.data.frame(resOrdered), file="project/deseq2_results.csv")
+
+# Get results
+res <- results(dds, contrast = c("treatment", "Empagliflozin", "Vehicle"))
+
+# Shrink log fold changes for plotting
+resLFC <- lfcShrink(dds, coef="treatment_Empagliflozin_vs_Vehicle", type="apeglm")
+
+# Order by adjusted p-value
+resOrdered <- resLFC[order(resLFC$padj), ]
+
+# Save results
+write.csv(as.data.frame(resOrdered), file="project/deseq2_results.csv")
+
+
+
+
 
 # Basic volcano plot
 res_df <- as.data.frame(resOrdered) %>%
