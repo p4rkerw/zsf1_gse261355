@@ -60,7 +60,7 @@ coldata <- data.frame(sample = samples.df$samples, genotype = as.factor(metadata
 ensembl <- useEnsembl(biomart = "ensembl", dataset = "rnorvegicus_gene_ensembl", mirror = "useast")
 
 # Retrieve transcript IDs and corresponding gene IDs
-tx2gene <- getBM(attributes = c("ensembl_transcript_id", "mgi_symbol"),
+tx2gene <- getBM(attributes = c("ensembl_transcript_id", "external_gene_id"),
                  mart = ensembl)
 
 # Check the structure
